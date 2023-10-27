@@ -1,0 +1,181 @@
+﻿@page "/jobs/{jobId:guid}/runs/{jobRunId:guid}"
+@using LPCR.Monitor.Core;
+@using LPCR.Monitor.Web.Infrastructure.Persistance.Entities;
+@using LPCR.Monitor.Web.Infrastructure.Persistance;
+@using LPCR.Monitor.Web.Models;
+@using Microsoft.EntityFrameworkCore;
+@using LPCR.Monitor.Web.Pages.Components;
+
+@if (Run is null)
+{
+    if (JobRunNotFound)
+    {
+        <NotFound />
+    }
+    else
+    {
+        <Loader Text="Chargement en cours..." />
+    }
+}
+else
+{
+    <h2>
+        <span>@JobName</span>
+    </h2>
+    <hr />
+
+    <section id="job-run-infos">
+        <h4>Informations</h4>
+        <Card>
+            <CardBody>
+                <div class="row">
+                    <div class="col-md">
+                        <div class="mb-3 row">
+                            <label class="col-sm-3 col-form-label fw-semibold">Status</label>
+                            <div class="col-sm-9">
+                                <JobStatusBadge Status="@Run.Status" />
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-sm-3 col-form-label fw-semibold">Date de création</label>
+                            <div class="col-sm-9">
+                                <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="@Run.Created">
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-sm-3 col-form-label fw-semibold">Date de démarrage</label>
+                            <div class="col-sm-9">
+                                @if (Run.Started.HasValue)
+                                {
+                                    <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="@Run.Started">
+                                }
+                                else
+                                {
+                                    <span class="form-control-plaintext">--</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        <div class="mb-3 row">
+                            <label class="col-sm-3 col-form-label fw-semibold">Date de fin</label>
+                            <div class="col-sm-9">
+                                @if (Run.Completed.HasValue)
+                                {
+                                    <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="@Run.Completed">
+                                }
+                                else
+                                {
+                                    <span class="form-control-plaintext">--</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-sm-3 col-form-label fw-semibold">Temps d'exécution</label>
+                            <div class="col-sm-9">
+                                @if (Run.ElapsedTime.HasValue)
+                                {
+                                    <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="@Run.ElapsedTime">
+                                }
+                                else
+                                {
+                                    <span class="form-control-plaintext">--</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </CardBody>
+        </Card>
+    </section>
+
+    <section id="job-run-traces" class="mt-3">
+        <h4>Traces</h4>
+        <Card>
+            <CardBody>
+                @if (Logs is null)
+                {
+                    <Loader Text="Chargement en cours..." />
+                }
+                else
+                {
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Label</th>
+                                <th>Date</th>
+                                <th>Message</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (!Logs.Any())
+                            {
+                                <tr>
+                                    <td colspan="3" class="text-center">Aucunes traces enregistrées.</td>
+                                </tr>
+                            }
+                            else
+                            {
+                                @foreach (JobRunLogModel log in Logs)
+                                {
+                                    <tr>
+                                        <td class="text-nowrap">
+                                            @switch (log.LogType)
+                                            {
+                                                case LogType.Information:
+                                                    <div class="badge bg-success">Information</div>
+                                                    break;
+                                                case LogType.Warning:
+                                                    <div class="badge bg-warning">Avertissement</div>
+                                                    break;
+                                                case LogType.Error:
+                                                    <div class="badge bg-danger">Erreur</div>
+                                                    break;
+                                                case LogType.Critical:
+                                                    <div class="badge bg-danger">Erreur critique</div>
+                                                    break;
+                                            }
+                                        </td>
+                                        <td class="text-nowrap">
+                                            @log.Date.ToString("dd/MM/yyyy HH:mm:ss")
+                                        </td>
+                                        <td class="w-100">
+                                            <div class="row">
+                                                <div class="col-md text-truncate">
+                                                    <span>@log.Message</span>
+                                                </div>
+                                                @if (log.HasException)
+                                                {
+                                                    <div class="col-md-auto">
+                                                        <a role="button" class="text-end" @onclick="log.ToggleExceptionPanel">Voir plus</a>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    @if (log.HasException && log.ShowException)
+                                    {
+                                        <tr>
+                                            <td colspan="3">
+                                                <Card class="card text-bg-dark">
+                                                    <CardBody>
+                                                        <pre style="white-space: pre-wrap">
+                                                            <code class="text-danger">
+                                                                @((MarkupString)log.Exception.Replace(@"\r\n", "<br />"))
+                                                            </code>
+                                                        </pre>
+                                                    </CardBody>
+                                                </Card>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            }
+                        </tbody>
+                    </table>
+                }
+            </CardBody>
+        </Card>
+    </section>
+}

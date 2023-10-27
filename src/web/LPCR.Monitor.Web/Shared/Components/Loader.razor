@@ -1,0 +1,20 @@
+﻿<div class="d-flex align-items-center justify-content-center">
+    <div class="mr-3">
+        <div class="lds-ring">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Text))
+    {
+        <div class="ms-3">@Text</div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string Text { get; set; }
+}

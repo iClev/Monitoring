@@ -1,0 +1,104 @@
+﻿@page "/"
+@using LPCR.Monitor.Core;
+@using LPCR.Monitor.Web.Infrastructure.Persistance;
+@using LPCR.Monitor.Web.Pages.Components
+@using Microsoft.EntityFrameworkCore;
+@inject IMonitoringDatabase Database
+
+<PageTitle>Monitor - Liste des flux</PageTitle>
+
+<h2>Liste des derniers flux</h2>
+
+@if (Jobs is null)
+{
+    <Loader Text="Chargement en cours..." />
+}
+else
+{
+    <Card>
+        <CardBody>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Last complete date</th>
+                        <th>Last status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (JobElement job in Jobs)
+                    {
+                        <tr>
+                            <td>
+                                <a href="/jobs/@job.Id">
+                                    @job.Name
+                                </a>
+                            </td>
+                            <td>
+                                @if (job.LastRun is null)
+                                {
+                                    <span>--</span>
+                                }
+                                else
+                                {
+                                    <span>@job.LastRun?.Completed?.ToString("dd/MM/yyyy HH:mm:ss")</span>
+                                }
+                            </td>
+                            <td>
+                                @if (job.LastRun is null)
+                                {
+                                    <span>--</span>
+                                }
+                                else
+                                {
+                                    <JobStatusBadge Status="job.LastRun?.Status" />
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </CardBody>
+    </Card>
+}
+
+@code {
+    public record JobElement
+    {
+        public Guid Id { get; init; }
+        public string Name { get; init; }
+        public JobRunElement LastRun { get; init; }
+    }
+
+    public record JobRunElement
+    {
+        public Guid Id { get; init; }
+        public DateTime? Completed { get; init; }
+        public JobStatusType Status { get; init; }
+    }
+
+    public IList<JobElement> Jobs { get; private set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        Jobs = Database.Jobs
+            .Include(x => x.Runs)
+            .Select(x => new JobElement
+            {
+                Id = x.Id,
+                Name = x.Name,
+                LastRun = x.Runs
+                    .OrderByDescending(x => x.Completed)
+                    .Select(p => new JobRunElement
+                    {
+                        Id = p.Id,
+                        Completed = p.Completed,
+                        Status = (JobStatusType)p.StatusId
+                    })
+                    .FirstOrDefault()
+            })
+            .ToList();
+
+        return base.OnInitializedAsync();
+    }
+}

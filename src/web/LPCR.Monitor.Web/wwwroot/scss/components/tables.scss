@@ -1,0 +1,6 @@
+﻿/* Tables */
+.table {
+    & tr.align-vertical-center > td {
+        vertical-align: middle;
+    }
+}

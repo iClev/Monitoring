@@ -1,0 +1,79 @@
+﻿@page "/jobs/{jobId:guid}"
+@using LPCR.Monitor.Core;
+@using LPCR.Monitor.Web.Infrastructure.Persistance;
+@using LPCR.Monitor.Web.Infrastructure.Persistance.Entities;
+@using LPCR.Monitor.Web.Models;
+@using LPCR.Monitor.Web.Pages.Components
+
+@if (CurrentJob is null)
+{
+    if (NotFound)
+    {
+        <NotFound />
+    }
+    else
+    {
+        <Loader Text="Chargement en cours..." />
+    }
+}
+else
+{
+    <h2>@CurrentJob.Name</h2>
+    <hr />
+    <div>
+        @CurrentJob.Description
+    </div>
+
+    @if (JobRuns is null)
+    {
+        <Loader Text="Chargement des runs du job..." />
+    }
+    else
+    {
+        <table class="table mt-4">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Date de création</th>
+                    <th>Date de démarrage</th>
+                    <th>Date de fin</th>
+                    <th>Temps d'exécution</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (JobRuns.Any())
+                {
+                    for (int i = 0; i < JobRuns.Count; i++)
+                    {
+                        JobRunModel run = JobRuns[i];
+                        <tr class="align-vertical-center">
+                            <td>@(JobRuns.Count - i)</td>
+                            <td>@run.Created.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                            <td>@(run.Started?.ToString("dd/MM/yyyy HH:mm:ss") ?? "--")</td>
+                            <td>@(run.Completed?.ToString("dd/MM/yyyy HH:mm:ss") ?? "--")</td>
+                            <td>@(run.ElapsedTime?.ToString("c") ?? "--")</td>
+                            <td>
+                                <JobStatusBadge Status="run.Status" />
+                            </td>
+                            <td>
+                                <Button Mode="ButtonMode.Link" Link="@($"/jobs/{JobId}/runs/{run.Id}")">
+                                    Voir plus
+                                </Button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center">
+                            <span>Ce job n'a pas encore été exécuté.</span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}

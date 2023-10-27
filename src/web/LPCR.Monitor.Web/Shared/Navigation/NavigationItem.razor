@@ -1,0 +1,13 @@
+﻿@inherits UIComponent
+
+<li class="navbar--item d-flex flex-column mx-2 cursor-pointer">
+    <a href="@Route">@Title</a>
+</li>
+
+@code {
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public string Route { get; set; }
+}

@@ -1,0 +1,39 @@
+﻿@using LPCR.Monitor.Core;
+@inherits UIComponent
+
+@switch (Status)
+{
+    case JobStatusType.Pending:
+        <Badge Type="Variants.Secondary">Pending</Badge>
+        break;
+    case JobStatusType.Queued:
+        <Badge Type="Variants.Secondary">Queued</Badge>
+        break;
+    case JobStatusType.Running:
+        <Badge Type="Variants.Primary">
+            <div class="spinner-grow spinner-grow-sm" role="status">
+            </div>
+            <span class="align-text-top">
+                Running...
+            </span>
+        </Badge>
+        break;
+
+    case JobStatusType.Completed:
+        <Badge Type="Variants.Success">Completed</Badge>
+        break;
+    case JobStatusType.Errored:
+        <Badge Type="Variants.Danger">Errored</Badge>
+        break;
+    case JobStatusType.Canceled:
+        <Badge Type="Variants.Secondary">Canceled</Badge>
+        break;
+    default:
+        <Badge Type="Variants.Secondary">Unknown</Badge>
+        break;
+}
+
+@code {
+    [Parameter]
+    public JobStatusType? Status { get; set; }
+}

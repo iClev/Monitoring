@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "LPCR.Monitor.JobRunner": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "APP_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

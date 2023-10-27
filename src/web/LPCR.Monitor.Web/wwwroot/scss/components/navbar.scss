@@ -1,0 +1,131 @@
+﻿@import '../abstracts/variables.scss';
+
+.navbar {
+    padding: 0;
+
+    &--main {
+        background-color: $navbar-color;
+        height: 66px;
+
+        & .navbar-brand {
+            font-family: 'JustAnotherHand';
+            font-size: 36px;
+            color: $navbar-brand-color;
+        }
+    }
+
+    & .navmenu {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+    li.navbar--item {
+        margin: 24px 12px;
+        transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 150ms;
+
+        & .navmenu--sub-menu {
+            display: none;
+        }
+
+        & > .sub-menu-trigger:checked ~ .navmenu--sub-menu {
+            display: block;
+        }
+
+        & a, label {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            margin-top: 0;
+            margin-bottom: 0;
+            color: #003d56;
+            font-size: 14px;
+            line-height: 16px;
+            font-weight: 700;
+            text-decoration: none;
+            text-transform: uppercase;
+            transition-property: all;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 150ms;
+
+            &:hover {
+                color: #68d8d2;
+            }
+        }
+    }
+
+    .navmenu--sub-menu {
+        & li {
+            display: block;
+            // padding: 16px 22px;
+
+            & a, label {
+                cursor: pointer;
+                display: block;
+                text-transform: none;
+                font-weight: 500;
+                // height: 100%;
+                // width: 100%;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+    /* Desktop support */
+    @media (min-width: 1024px) {
+        li.navbar--item {
+            margin: 0;
+            height: 100%;
+            align-items: center;
+
+            &:hover > .navmenu--sub-menu {
+                display: block;
+            }
+
+            & > a, label {
+                height: 100%;
+                width: 100%;
+            }
+        }
+
+        .navmenu--sub-menu {
+            margin: 0px;
+            padding: 0px;
+            position: absolute;
+            left: 0px;
+            list-style-type: none;
+            display: block;
+            width: 250px;
+            top: 64px;
+            z-index: 9;
+            background-color: #ffffff;
+            filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
+
+            & li {
+                display: block;
+                padding: 16px 22px;
+
+                & a, label {
+                    display: block;
+                    text-transform: none;
+                    font-weight: 500;
+                    height: 100%;
+                    width: 100%;
+
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+            }
+
+            & .navmenu--sub-menu {
+                position: absolute;
+                left: 250px;
+                top: 0px;
+            }
+        }
+    }
+}

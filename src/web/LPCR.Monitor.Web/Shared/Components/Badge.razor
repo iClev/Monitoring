@@ -1,0 +1,11 @@
+﻿@using LPCR.Monitor.Web.Shared.Components;
+@inherits UIComponent
+
+<span class="badge bg-@Type.ToString().ToLower()" @attributes="Attributes">
+    @ChildContent
+</span>
+
+@code {
+    [Parameter]
+    public Variants Type { get; set; } = Variants.Primary;
+}

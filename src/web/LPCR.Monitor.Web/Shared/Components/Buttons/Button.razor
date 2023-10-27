@@ -1,0 +1,29 @@
+﻿@using LPCR.Monitor.Web.Shared.Components.Buttons;
+@inherits UIComponent
+
+@if (Mode == ButtonMode.Button)
+{
+    <button class="button button--@Variant.ToString().ToLower()" onclick="@OnClick" @attributes="Attributes">
+        @ChildContent
+    </button>
+}
+else
+{
+    <a class="button button--@Variant.ToString().ToLower()" href="@Link" @attributes="Attributes">
+        @ChildContent
+    </a>
+}
+
+@code {
+    [Parameter]
+    public Variants Variant { get; set; } = Variants.Primary;
+
+    [Parameter]
+    public ButtonMode Mode { get; set; } = ButtonMode.Button;
+
+    [Parameter]
+    public Action OnClick { get; set; }
+
+    [Parameter]
+    public string Link { get; set; }
+}
